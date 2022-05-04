@@ -11,12 +11,13 @@ def randn(*shape):
 # Часть 1:
 
 def ones(*shape):
-    pass  # Your code here
+    return tensor([1 for _ in range(shape[0])])
 
 
 def tensor(data):
-    pass  # Your code here
+    return Tensor(data)
 
 
 def zeros(*shape):
-    pass  # Your code here
+    return tensor([0 for _ in range(shape[0])])
+

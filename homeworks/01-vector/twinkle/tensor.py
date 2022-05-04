@@ -36,78 +36,89 @@ class Tensor(Iterable):
 
     @property
     def shape(self):
-        pass  # Your code here
+        return self._shape
 
     def _binary_op(self, other, fn):
         if isinstance(other, numbers.Number):
-            pass  # Your code here
+            return Tensor([fn(x, other) for x in self._data])
         if isinstance(other, Tensor):
-            pass  # Your code here
-            self._assert_same_shape(other)
-            pass  # Your code here
+            if self._shape == () and other._shape == ():
+                return Tensor(fn(self._data, other._data))
+            elif self._shape == ():
+                return Tensor([fn(self._data, x) for x in other._data])
+            elif other._shape == ():
+                return Tensor([fn(x, other._data) for x in self._data])
+            else:
+                self._assert_same_shape(other)
+                return Tensor([fn(self._data[i], other._data[i]) for i in range(len(self))])
         raise TypeError(f"unsupported operand type(s) for +: 'Tensor' and '{type(other)}'")
 
     def add(self, other):
-        pass  # Your code here
+        return self._binary_op(other, lambda x, y: x + y)
 
     def mul(self, other):
-        pass  # Your code here
+        return self._binary_op(other, lambda x, y: x * y)
+
 
     def sub(self, other):
-        pass  # Your code here
+        return self._binary_op(other, lambda x, y: x - y)
 
     def lt(self, other):
-        pass  # Your code here
+        return self._binary_op(other, lambda x, y: int(x < y))
+
 
     def gt(self, other):
-        pass  # Your code here
+        return self._binary_op(other, lambda x, y: int(x > y))
+
 
     def neg(self):
-        pass  # Your code here
+        return self.mul(-1)
 
     def dot(self, other):
         self._assert_same_shape(other)
         assert len(self._shape) == 1, '1D tensors expected'
-        pass  # Your code here
+        return sum(self.mul(other))
 
     def __add__(self, other):
-        pass  # Your code here
+        return self.add(other)
 
     def __radd__(self, other):
-        pass  # Your code here
+        return self.add(other)
 
     def __mul__(self, other):
-        pass  # Your code here
+        return self.mul(other)
 
     def __rmul__(self, other):
-        pass  # Your code here
+        return self.mul(other)
 
     def __sub__(self, other):
-        pass  # Your code here
+        return self.sub(other)
 
     def __rsub__(self, other):
-        pass  # Your code here
+        return self.sub(other).neg()
 
     def __gt__(self, other):
-        pass  # Your code here
+        return self.gt(other)
 
     def __lt__(self, other):
-        pass  # Your code here
+        return self.lt(other)
 
     def __neg__(self):
-        pass  # Your code here
+        return self.neg()
 
     def __len__(self):
-        pass  # Your code here
+        return self._shape[0]
 
     def __eq__(self, other):
-        pass  # Your code here
+        return self.allclose(other)
 
     def __iter__(self):
         assert len(self._shape) > 0, 'iteration over a 0-d tensor'
-        pass  # Your code here
+        for x in self._data:
+            yield x
+
 
     def __getitem__(self, key):
         if isinstance(key, numbers.Integral):
-            pass  # Your code here
+            return self._data[key]
         raise TypeError(f'only integers and 1-d Tensors are valid indices (got {type(key)})')
