@@ -30,19 +30,6 @@ def zeros(*shape):
 def eye(n):
     return Tensor(reduce(add, [[1 if i == j else 0 for i in range(n)] for j in range(n)])).reshape(n, n)
 
-# def to_categorical(y, num_classes):
-#     d = dict()
-#     iter_e = iter(eye(num_classes))
-#     arr = []
-#     for num_class in y:
-#         if num_class in d.keys():
-#             row = d[num_class]
-#         else:
-#             row = next(iter_e)
-#             d[num_class] = row
-#         arr.append(row._data)
-#     return Tensor(reduce(add, arr)).reshape(len(arr), num_classes)
-
 
 def to_categorical(y, num_classes):
     e = eye(num_classes)

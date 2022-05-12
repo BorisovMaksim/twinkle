@@ -55,9 +55,7 @@ class RegressionLoss(LossFunction):
 
 class SquaredLoss(RegressionLoss):
     def loss(self, p: float, y: float) -> float:
-        # <YOUR CODE HERE>
-        raise NotImplementedError()
+        return ((y - p) ** 2) / 2
 
     def dloss(self, p: float, y: float) -> float:
-        # <YOUR CODE HERE>
-        raise NotImplementedError()
+        return y - p

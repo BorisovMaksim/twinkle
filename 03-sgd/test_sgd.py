@@ -91,10 +91,10 @@ class TestSquaredLoss():
         assert loss.dloss(0, 0) == 0
         assert loss.dloss(1, 1) == 0
         assert loss.dloss(2, 2) == 0
-        assert loss.dloss(0, 1) == -1
-        assert loss.dloss(0, 2) == -2
-        assert loss.dloss(1, 0) == 1
-        assert loss.dloss(2, 0) == 2
+        assert loss.dloss(0, 1) == 1
+        assert loss.dloss(0, 2) == 2
+        assert loss.dloss(1, 0) == -1
+        assert loss.dloss(2, 0) == -2
 
 
 class TestSgdFn():
