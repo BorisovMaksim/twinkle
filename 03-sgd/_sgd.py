@@ -31,25 +31,29 @@ def sgd(
 
         for i in indices:
             # Calculate prediction for current sample.
-            y_hat = 0.0  # <YOUR CODE HERE>
+            y_hat = np.dot(X[i], weights) + intercept
             # Calculate squared error gradient by prediction. Use loss.dloss
-            dloss = 0.0  # <YOUR CODE HERE>
+            dloss = loss.dloss(p=y_hat, y=y[i])
             print_dloss(dloss, verbose)
 
             # Calculate prediction gradient by weights.
-            dp_dw = 0.0  # <YOUR CODE HERE>
+            dp_dw = (y_hat - y[i])*X[i]
             # Update weights, using gradients. Don't forget about learning rate.
-            weights += 0.0  # <YOUR CODE HERE>
+            weights = weights - eta*dp_dw
 
             if fit_intercept:
                 # Calculate prediction gradient by intercept.
-                dp_dw = 0.0  # <YOUR CODE HERE>
+                dp_dw = y_hat - y[i]
                 # Update intercept, using gradients. Don't forget about learning rate.
-                intercept += 0.0  # <YOUR CODE HERE>
+                intercept = intercept - eta*dp_dw
 
     return weights, intercept, epoch + 1
 
 
 def print_dloss(dloss, verbose=True):
-    # <YOUR CODE HERE>
+    if verbose and dloss is not np.nan:
+        if dloss >= 0:
+            print(f"-- grad +{dloss:.2e}")
+        else:
+            print(f"-- grad {dloss:.2e}")
     pass

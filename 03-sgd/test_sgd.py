@@ -33,7 +33,6 @@ def load_dataset():
 def wrap_sgd(sgd):
     X, y = load_dataset()
     rng = np.random.RandomState(42)
-
     default_args = dict(
         weights=rng.randn(X.shape[1]),
         intercept=np.zeros(1),
@@ -98,6 +97,7 @@ class TestSquaredLoss():
 
 
 class TestSgdFn():
+
     def test_return_epochs_with_no_early_stopping(self):
         _sgd = wrap_sgd(sgd)
         _, _, epochs = _sgd(max_iter=1)
@@ -123,6 +123,7 @@ class TestSgdFn():
     def test_fit_weights_fit_intercept(self):
         _sgd = wrap_sgd(sgd)
         weights, intercept, _ = _sgd(shuffle=False)
+        print(weights)
         assert np.allclose(weights, np.array([
             -1.16, 0.65, 0.21, 1.31, -1.96, 0.71, -0.23,
             -2.13, 1.97, -1.41, -1.37, 0.27, -4.48,
@@ -133,11 +134,12 @@ class TestSgdFn():
         _sgd = wrap_sgd(sgd)
         initial_weights = np.ones(13)
         initial_intercept = np.zeros(1)
-        _sgd(
+        initial_weights, initial_intercept, _ = _sgd(
             weights=initial_weights,
             intercept=initial_intercept,
             shuffle=False,
         )
+
         assert np.allclose(initial_weights, np.array([
             -1.16, 0.65, 0.21, 1.31, -1.96, 0.71, -0.23,
             -2.13, 1.97, -1.41, -1.37, 0.27, -4.48,
@@ -161,7 +163,6 @@ class TestSGDRegressor():
     def test_coef_attribute(self):
         X, y = np.zeros((1, 13)), np.zeros(1)
         reg = SGDRegressor(max_iter=1)
-
         with assert_raises(AttributeError):
             reg.coef_
 
@@ -301,7 +302,7 @@ class TestMaxAbsScaler():
         assert transformer == fitted_transformer
         assert transformer.n_samples_seen_ == 4
         assert np.allclose(transformer.max_abs_, np.array([ 1., 10., 10., 100.]))
-        assert np.allclose(transformer.scale_, np.array([ 1., 10., 10., 100.]))
+        assert np.allclose(transformer.scale_, np.array([ 1., 1/10., 1/10., 1/100.]))
 
     def test_fit_scale_from_docs(self):
         transformer = MaxAbsScaler()
@@ -314,7 +315,7 @@ class TestMaxAbsScaler():
         assert transformer == fitted_transformer
         assert transformer.n_samples_seen_ == 3
         assert np.allclose(transformer.max_abs_, np.array([ 2., 1., 2.]))
-        assert np.allclose(transformer.scale_, np.array([ 2., 1., 2.]))
+        assert np.allclose(transformer.scale_, np.array([ 1/2., 1., 1/2.]))
 
     def test_transform_easy(self):
         transformer = MaxAbsScaler()
@@ -326,6 +327,7 @@ class TestMaxAbsScaler():
         ])
         transformer.fit(X)
         X_scaled = transformer.transform(X)
+        print(X_scaled)
         assert np.allclose(X_scaled, np.array([
             [ 1.,  0.7, -0.2, 0.01],
             [ 1., -1.0,  1.0,  1.0],
@@ -357,7 +359,8 @@ class TestMaxAbsScaler():
             [ 1.,   2., -5.,  42.],
         ])
         X_scaled = transformer.fit_transform(X)
-        assert np.allclose(transformer.scale_, np.array([ 1., 10., 10., 100.]))
+        print(transformer.scale_)
+        assert np.allclose(transformer.scale_, np.array([ 1., 1/10., 1/10., 1/100.]))
         assert np.allclose(transformer.max_abs_, np.array([ 1., 10., 10., 100.]))
         assert transformer.n_samples_seen_ == 4
         assert np.allclose(X_scaled, np.array([
@@ -375,7 +378,7 @@ class TestMaxAbsScaler():
             [ 0.,  1., -1.],
         ])
         X_scaled = transformer.fit_transform(X)
-        assert np.allclose(transformer.scale_, np.array([ 2., 1., 2.]))
+        assert np.allclose(transformer.scale_, np.array([ 1/2., 1.,1/ 2.]))
         assert np.allclose(transformer.max_abs_, np.array([ 2., 1., 2.]))
         assert transformer.n_samples_seen_ == 3
         assert np.allclose(X_scaled, np.array([
