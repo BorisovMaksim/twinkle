@@ -10,7 +10,8 @@ class MaxAbsScaler:
         return self
 
     def transform(self, X):
-        return np.array([X[:, i]*self.scale_[i] for i in range(X.shape[1])]).T
+        X *= self.scale_
+        return X
 
     def fit_transform(self, X):
         return self.fit(X).transform(X)

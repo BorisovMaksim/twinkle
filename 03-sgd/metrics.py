@@ -3,7 +3,7 @@ def mean_absolute_error(y_true, y_pred):
 
 
 def mean_squared_error(y_true, y_pred):
-    return ((y_true - y_pred) **2).mean()
+    return ((y_true - y_pred) ** 2).mean()
 
 def r2_score(y_true, y_pred):
-    raise NotImplementedError()
+    return 1 - ((y_true - y_pred) ** 2).mean()/y_true.var()

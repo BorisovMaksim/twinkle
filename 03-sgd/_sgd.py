@@ -27,8 +27,11 @@ def sgd(
         if verbose:
             print(f'-- Epoch {epoch + 1}')
 
-        indices = list(range(n_samples))
-
+        indices =list(range(n_samples))
+        if seed is not None:
+            np.random.seed(seed)
+        if shuffle:
+            indices = np.random.permutation(indices)
         for i in indices:
             # Calculate prediction for current sample.
             y_hat = np.dot(X[i], weights) + intercept
@@ -37,7 +40,7 @@ def sgd(
             print_dloss(dloss, verbose)
 
             # Calculate prediction gradient by weights.
-            dp_dw = (y_hat - y[i])*X[i]
+            dp_dw = (y_hat - y[i])*X[i]*sample_weight[i] if sample_weight is not None else (y_hat - y[i])*X[i]
             # Update weights, using gradients. Don't forget about learning rate.
             weights = weights - eta*dp_dw
 
@@ -46,7 +49,6 @@ def sgd(
                 dp_dw = y_hat - y[i]
                 # Update intercept, using gradients. Don't forget about learning rate.
                 intercept = intercept - eta*dp_dw
-
     return weights, intercept, epoch + 1
 
 

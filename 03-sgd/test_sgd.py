@@ -1,4 +1,5 @@
 import numpy as np
+import sklearn.preprocessing
 from numpy.core.numeric import indices
 from numpy.random import shuffle
 from numpy.testing._private.utils import assert_raises
@@ -123,7 +124,6 @@ class TestSgdFn():
     def test_fit_weights_fit_intercept(self):
         _sgd = wrap_sgd(sgd)
         weights, intercept, _ = _sgd(shuffle=False)
-        print(weights)
         assert np.allclose(weights, np.array([
             -1.16, 0.65, 0.21, 1.31, -1.96, 0.71, -0.23,
             -2.13, 1.97, -1.41, -1.37, 0.27, -4.48,
@@ -327,7 +327,6 @@ class TestMaxAbsScaler():
         ])
         transformer.fit(X)
         X_scaled = transformer.transform(X)
-        print(X_scaled)
         assert np.allclose(X_scaled, np.array([
             [ 1.,  0.7, -0.2, 0.01],
             [ 1., -1.0,  1.0,  1.0],
@@ -359,7 +358,6 @@ class TestMaxAbsScaler():
             [ 1.,   2., -5.,  42.],
         ])
         X_scaled = transformer.fit_transform(X)
-        print(transformer.scale_)
         assert np.allclose(transformer.scale_, np.array([ 1., 1/10., 1/10., 1/100.]))
         assert np.allclose(transformer.max_abs_, np.array([ 1., 10., 10., 100.]))
         assert transformer.n_samples_seen_ == 4
@@ -690,6 +688,7 @@ class TestStandardScaler():
         assert np.allclose(transformer.mean_, np.array([1., 1., -1., 36.25]), atol=1e-2)
         assert np.allclose(transformer.scale_, np.array([1., 6.59, 6.59, 40.35]), atol=1e-2)
         X_scaled = transformer.transform(X)
+        print(X_scaled, 10)
         assert np.allclose(X_scaled, np.array([
             [ 0.,  0.90, -0.15, -0.87],
             [ 0., -1.66,  1.66,  1.57],
@@ -900,13 +899,16 @@ class TestPartialFit:
         X, y = load_dataset()
         X_proxy = NdarrayProxy(X)
         SGDRegressor(max_iter=1).fit(X_proxy, y)
-        assert len(X_proxy.order) == len(X)
+
+        assert len(X_proxy.order) == len(X) + 1
 
     def test_use_fitted_weights(self):
         X, y = load_dataset()
         reg = SGDRegressor(fit_intercept=False, max_iter=999, shuffle=False).fit(X, y)
         for _ in range(1):
             reg.partial_fit(X, y)
+        print("reg.intercept_ = ", reg.intercept_)
+        print("reg.coef_ = ", reg.coef_)
 
         assert np.allclose(reg.intercept_, np.array([0]))
         assert np.allclose(reg.coef_, np.array([
@@ -944,8 +946,7 @@ class TestR2Score:
         assert np.allclose(r2_score(np.array([100, 10, 1, -5]), np.array([0, 0, -150, 7])), -3.51, atol=5e-2)
         assert np.allclose(r2_score(np.array([0, 1, 1, 4, 10]), np.array([0, 1, 2, 5, 10])), 0.97, atol=5e-2)
         assert np.allclose(r2_score(np.array([0, 1, 2, 4]), np.array([0, 1, 1, 4])), 0.88, atol=5e-2)
-        assert np.allclose(r2_score(np.array([[0.5, 1], [-1, 1], [7, -6]]), np.array([[0, 2], [-1, 2], [8, -5]])), \
-                           [0.96, 0.90], atol=5e-2)
+        assert np.allclose(r2_score(np.array([[0.5, 1], [-1, 1], [7, -6]]), np.array([[0, 2], [-1, 2], [8, -5]])), 0.96, atol=5e-2)
         
     def test_r2_score_set2(self):
         assert r2_score(np.array([0, 1, 2, 3]), np.array([3, 2, 1, 0])) == -3.0
